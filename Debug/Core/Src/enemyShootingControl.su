@@ -1,0 +1,6 @@
+enemyShootingControl.c:24:6:checkEnemyFreeLineToShot	24	static
+enemyShootingControl.c:854:6:initEnemyShooting	16	static
+enemyShootingControl.c:874:6:enemyShooting_1	16	static
+enemyShootingControl.c:4707:6:enemyShooting_2	16	static
+enemyShootingControl.c:8542:6:enemyShooting_3	16	static
+enemyShootingControl.c:12381:6:enemyShooting_4	16	static

@@ -1,0 +1,16 @@
+Menu.c:39:6:MENU	8	static
+Menu.c:137:6:MENU_Animation_TIM2	8	static
+Menu.c:155:6:MENU_Animation_TIM5	8	static
+Menu.c:174:6:textFade	8	static
+Menu.c:192:6:showUpperText	8	static
+Menu.c:203:6:main_Menu	16	static
+Menu.c:299:6:main_Menu_Marked	16	static
+Menu.c:392:6:level_Menu	16	static
+Menu.c:448:6:level_Menu_Picked	8	static
+Menu.c:509:6:Menu_Conditions	8	static
+Menu.c:585:6:highscoresAnimation	8	static
+Menu.c:736:6:hiscore_Menu	16	static
+Menu.c:899:6:creditsAnimation	8	static
+Menu.c:1018:6:leftArrowAnimation	16	static
+Menu.c:1073:6:credits_Menu	16	static
+Menu.c:1175:6:credits_Menu_Marked	16	static

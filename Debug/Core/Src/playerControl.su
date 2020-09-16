@@ -1,0 +1,7 @@
+playerControl.c:13:6:checkForPlayerHit	16	static
+playerControl.c:187:6:playerChangePosition	8	static
+playerControl.c:720:6:playerMoveLeft	4	static
+playerControl.c:728:6:playerMoveRight	4	static
+playerControl.c:736:6:initPlayer	16	static
+playerControl.c:797:6:checkForPlayerMove	8	static
+playerControl.c:807:6:playerPositioning	8	static

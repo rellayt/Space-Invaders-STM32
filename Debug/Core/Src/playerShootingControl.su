@@ -1,0 +1,2 @@
+playerShootingControl.c:9:6:findPlayerPosition	16	static
+playerShootingControl.c:17:6:playerShot	8	static

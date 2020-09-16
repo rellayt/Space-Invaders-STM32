@@ -1,0 +1,6 @@
+ws2812b.c:124:6:encode_byte	24	static
+ws2812b.c:131:6:generate_ws_buffer	32	static
+ws2812b.c:141:6:Send_4812	8	static
+ws2812b.c:152:6:setAllPixelColor	24	static
+ws2812b.c:159:6:setPixelColor	24	static
+ws2812b.c:167:6:initLEDMOSI	16	static

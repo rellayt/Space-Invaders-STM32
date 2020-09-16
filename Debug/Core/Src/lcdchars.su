@@ -1,0 +1,2 @@
+lcdchars.c:142:6:createChar	24	static
+lcdchars.c:148:6:createInvertedWord	40	static

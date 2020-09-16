@@ -1,0 +1,8 @@
+joystick.c:13:6:UP	4	static
+joystick.c:19:6:DOWN	4	static
+joystick.c:25:6:RIGHT	4	static
+joystick.c:31:6:LEFT	4	static
+joystick.c:37:6:blockJoystick	4	static
+joystick.c:45:6:unblockJoystick	4	static
+joystick.c:53:1:getJoystickLed	8	static
+joystick.c:80:7:getJoystickDirection	16	static
