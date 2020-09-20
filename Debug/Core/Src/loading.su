@@ -1,3 +1,4 @@
 loading.c:12:6:printDots	8	static
 loading.c:59:6:enemyAboveWord	16	static
-loading.c:166:6:miniDuelOfSpaces	16	static
+loading.c:167:6:miniDuelOfSpaces	16	static
+loading.c:219:6:resetLoadingVariables	4	static

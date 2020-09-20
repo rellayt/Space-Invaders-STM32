@@ -3,6 +3,8 @@ bool gameOver = false, gameOverInitWord = false, initColor = true,
 		reverseColor = false, reverseColor_2 = true;
 int gameOverThemeStep = -1, gameOverThemeStep_2 = 1;
 int gameOverColor_1 = 0, gameOverColor_2 = 30;
+int gameOverDisappear = 0;
+bool enableGameOver = true;
 void checkForRoundOver() {
 	bool anyEnemy = false;
 	for (int i = 96; i < 207; i++) {
@@ -20,6 +22,9 @@ void checkForRoundOver() {
 		enemyInitialized = false;
 		blockInitEnemy = false;
 		blockInitFirstLine = false;
+		if(gameRound != 6){
+			gameRound++;
+		}
 	}
 }
 
@@ -648,7 +653,7 @@ void gameOverTheme() {
 void SpaceInvaders_gameOver(){
 	if (gameOver) {
 		gameOverTheme();
-		if (gameOverInitWord) {
+		if (gameOverInitWord && enableGameOver) {
 			if (initColor) {
 				gameOverColor_1++;
 				gameOverColor_2--;

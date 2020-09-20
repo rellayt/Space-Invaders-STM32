@@ -1,3 +1,5 @@
+#ifndef INC_ENEMYCONTROL_H_
+#define INC_ENEMYCONTROL_H_
 #include "stdbool.h"
 #include "main.h"
 #include "diode.h"
@@ -32,3 +34,4 @@ void enemyMovement();
 void checkForEnemyHit();
 void checkForBulletCollision();
 int getEnemyBulletLine(int enemyDiodeID);
+#endif

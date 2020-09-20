@@ -1,22 +1,22 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * File Name          : stm32f7xx_hal_msp.c
-  * Description        : This file provides code for the MSP Initialization 
-  *                      and de-Initialization codes.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * File Name          : stm32f7xx_hal_msp.c
+ * Description        : This file provides code for the MSP Initialization
+ *                      and de-Initialization codes.
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -35,7 +35,7 @@ extern DMA_HandleTypeDef hdma_spi1_tx;
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN Define */
- 
+
 /* USER CODE END Define */
 
 /* Private macro -------------------------------------------------------------*/
@@ -242,6 +242,7 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
   }
 
 }
+
 /**
 * @brief TIM_Base MSP Initialization
 * This function configures the hardware resources used in this example
@@ -525,19 +526,19 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
 
     /* TIM8 interrupt DeInit */
   /* USER CODE BEGIN TIM8:TIM8_BRK_TIM12_IRQn disable */
-    /**
-    * Uncomment the line below to disable the "TIM8_BRK_TIM12_IRQn" interrupt
-    * Be aware, disabling shared interrupt may affect other IPs
-    */
-    /* HAL_NVIC_DisableIRQ(TIM8_BRK_TIM12_IRQn); */
+		/**
+		 * Uncomment the line below to disable the "TIM8_BRK_TIM12_IRQn" interrupt
+		 * Be aware, disabling shared interrupt may affect other IPs
+		 */
+		/* HAL_NVIC_DisableIRQ(TIM8_BRK_TIM12_IRQn); */
   /* USER CODE END TIM8:TIM8_BRK_TIM12_IRQn disable */
 
   /* USER CODE BEGIN TIM8:TIM8_UP_TIM13_IRQn disable */
-    /**
-    * Uncomment the line below to disable the "TIM8_UP_TIM13_IRQn" interrupt
-    * Be aware, disabling shared interrupt may affect other IPs
-    */
-    /* HAL_NVIC_DisableIRQ(TIM8_UP_TIM13_IRQn); */
+		/**
+		 * Uncomment the line below to disable the "TIM8_UP_TIM13_IRQn" interrupt
+		 * Be aware, disabling shared interrupt may affect other IPs
+		 */
+		/* HAL_NVIC_DisableIRQ(TIM8_UP_TIM13_IRQn); */
   /* USER CODE END TIM8:TIM8_UP_TIM13_IRQn disable */
 
   /* USER CODE BEGIN TIM8_MspDeInit 1 */
@@ -596,11 +597,11 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
 
     /* TIM12 interrupt DeInit */
   /* USER CODE BEGIN TIM12:TIM8_BRK_TIM12_IRQn disable */
-    /**
-    * Uncomment the line below to disable the "TIM8_BRK_TIM12_IRQn" interrupt
-    * Be aware, disabling shared interrupt may affect other IPs
-    */
-    /* HAL_NVIC_DisableIRQ(TIM8_BRK_TIM12_IRQn); */
+		/**
+		 * Uncomment the line below to disable the "TIM8_BRK_TIM12_IRQn" interrupt
+		 * Be aware, disabling shared interrupt may affect other IPs
+		 */
+		/* HAL_NVIC_DisableIRQ(TIM8_BRK_TIM12_IRQn); */
   /* USER CODE END TIM12:TIM8_BRK_TIM12_IRQn disable */
 
   /* USER CODE BEGIN TIM12_MspDeInit 1 */
@@ -617,11 +618,11 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
 
     /* TIM13 interrupt DeInit */
   /* USER CODE BEGIN TIM13:TIM8_UP_TIM13_IRQn disable */
-    /**
-    * Uncomment the line below to disable the "TIM8_UP_TIM13_IRQn" interrupt
-    * Be aware, disabling shared interrupt may affect other IPs
-    */
-    /* HAL_NVIC_DisableIRQ(TIM8_UP_TIM13_IRQn); */
+		/**
+		 * Uncomment the line below to disable the "TIM8_UP_TIM13_IRQn" interrupt
+		 * Be aware, disabling shared interrupt may affect other IPs
+		 */
+		/* HAL_NVIC_DisableIRQ(TIM8_UP_TIM13_IRQn); */
   /* USER CODE END TIM13:TIM8_UP_TIM13_IRQn disable */
 
   /* USER CODE BEGIN TIM13_MspDeInit 1 */

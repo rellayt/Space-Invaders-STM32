@@ -36,14 +36,46 @@ char selectedLevel = 'N';
 #define LCD_CLS_4_8_Lines lcd_clear_4_8_lines();
 #define LCD_Clear lcd_cls();
 #define LCD_Blink lcd_send_cmd (0x0F);
+void menuResetVariables() {
+	mainMenuIndex = 0;
+	levelMenuIndex = -1;
+	levelMenuIndexTemp = 40;
+	levelMenuIndex2;
+	hiscoreMenuIndex = 0;
+	highscoresIndexAnim = -1;
+	creditsMenuIndex = 0;
+	creditsMenuIndexTemp = 0;
+	creditsIndexAnim = 0;
+	leftArrowAnimIndex = 0;
+	creditsMenuIndexTemp2 = 0;
+	hiscoreMenu = false;
+	Fade = false;
+	mainMenu = true;
+	upperText = false;
+	levelMenu = false;
+	pickedLevel = false;
+	leftArrowAnim = false;
+	hard = false;
+	medium = false;
+	highscoresAnim = false;
+	reverse = false;
+	reverse2 = false;
+	creditsAnim =false;
+	turn = false;
+	backPicked = false;
+	creditsMenu = false;
+	creditsMenuMarked = false;
+	fade = 0;
+	selectedLevel = 'N';
+	intro = false;
+	resetLoadingVariables();
+}
 void MENU() {
-	getJoystickLed();
 	if (animationRound >= -10)
 		animationRound--;
 	if (intro) {
 		introAnimation(animationRound);
 	}
-
 	Menu_Conditions();
 	if (DOWN()) {
 
@@ -102,11 +134,6 @@ void MENU() {
 			creditsMenuIndex = creditsMenuIndexTemp;
 			creditsMenuIndex--;
 		}
-	}
-	if (RIGHT()) {
-	}
-
-	if (LEFT()) {
 	}
 
 	if (mainMenu)

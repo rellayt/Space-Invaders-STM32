@@ -51,9 +51,9 @@ void unblockJoystick()
 	blockPress=false;
 }
 getJoystickLed() {
-	if (DOWN() && !blockDown) {
+	if (DOWN() ) {
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
-	} else if (UP() && !blockUp) {
+	} else if (UP() ) {
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET);
 	} else {
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_RESET);

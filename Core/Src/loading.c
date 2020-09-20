@@ -151,6 +151,7 @@ void enemyAboveWord() {
 		createInvertedWord("6", 0x4A, 1, 6, 2);
 		break;
 	case 18:
+		gameStarted = true;
 		lcd_cls();
 		break;
 	default:
@@ -206,7 +207,6 @@ void miniDuelOfSpaces() {
 	case 9:
 		LCD_SetLocalization(0x41);
 		LCD_SendWord("  ");
-		gameStarted = true;
 		break;
 	default:
 		break;
@@ -216,6 +216,14 @@ void miniDuelOfSpaces() {
 		iSpace++;
 	}
 }
-
+void resetLoadingVariables(){
+	iDot = 0;
+	iSpace = -1;
+	iSpace2 = 0;
+	dots = false;
+	miniDuel = false;
+	enemySpace = false;
+	gameStarted = false;
+}
 
 

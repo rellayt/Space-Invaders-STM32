@@ -1,4 +1,4 @@
-gameOver.c:6:6:checkForRoundOver	16	static
-gameOver.c:26:6:gameOverTheme	16	static
-gameOver.c:648:6:SpaceInvaders_gameOver	8	static
-gameOver.c:676:6:gameOver_reset	4	static
+gameOver.c:8:6:checkForRoundOver	16	static
+gameOver.c:31:6:gameOverTheme	16	static
+gameOver.c:653:6:SpaceInvaders_gameOver	8	static
+gameOver.c:681:6:gameOver_reset	4	static

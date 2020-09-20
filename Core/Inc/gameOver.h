@@ -11,6 +11,7 @@
 #include "GlobalDefines.h"
 #include "enemyControl.h"
 #include "joystick.h"
+#include "game.h"
 
 void gameOverTheme();
 void SpaceInvaders_gameOver();
@@ -19,5 +20,6 @@ void gameOver_reset();
 bool gameOver, gameOverInitWord, initColor, reverseColor, reverseColor_2;
 int gameOverThemeStep, gameOverThemeStep_2;
 int gameOverColor_1, gameOverColor_2;
-
+int gameOverDisappear;
+bool enableGameOver;
 #endif /* INC_GAMEOVER_H_ */

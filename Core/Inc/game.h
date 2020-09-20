@@ -8,8 +8,8 @@
 int currentScore, newScore;
 bool reverseLED;
 int themeID, themeID_temp;
-int newGameTimeCounter, currentGameTimeCounter;
+int newGameTimeCounter, currentGameTimeCounter, gameRound;
 int getRand(int min, int max);
-void theme(uint16_t diodeID);
+void theme(int diodeID);
 
 #endif /* INC_GAME_H_ */

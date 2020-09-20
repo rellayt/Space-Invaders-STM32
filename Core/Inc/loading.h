@@ -14,5 +14,5 @@ extern bool dots, miniDuel, enemySpace, gameStarted;
 void miniDuelOfSpaces();
 void enemyAboveWord();
 void printDots();
-
+void resetLoadingVariables();
 #endif /* INC_LOADING_H_ */

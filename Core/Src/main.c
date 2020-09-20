@@ -47,7 +47,8 @@
 #include "enemyControl.h"
 #include "objectRefresh.h"
 #include "game.h"
-
+#include "LCDgameService.h"
+#include "gameOver.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,6 +71,9 @@ DMA_HandleTypeDef hdma_adc1;
 
 I2C_HandleTypeDef hi2c2;
 
+SPI_HandleTypeDef hspi1;
+DMA_HandleTypeDef hdma_spi1_tx;
+
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
@@ -84,7 +88,6 @@ TIM_HandleTypeDef htim12;
 TIM_HandleTypeDef htim13;
 
 /* USER CODE BEGIN PV */
-uint32_t VR[2];
 
 #define LCD_Clear_1 lcd_clear_1();
 #define LCD_Clear_2 lcd_clear_2();
@@ -101,7 +104,6 @@ uint32_t VR[2];
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_ADC1_Init(void);
 static void MX_I2C2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
@@ -115,419 +117,17 @@ static void MX_TIM10_Init(void);
 static void MX_TIM11_Init(void);
 static void MX_TIM12_Init(void);
 static void MX_TIM13_Init(void);
+static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 struct Diode DiodeArray[256];
-
-bool lcdInitSample = false, LCDtriedAgain = false;
-int LCDtitleAnimationStep = 0, waitToDisplayTryAgain = 0,
-		LCDtryAgainAnimationStep = 0;
-bool reverseLCDtitleAnimation = false;
-char LCDtryAgainOption = 'Y', LCDtryAgainOptionTemp = 'Y';
-bool tryAgain = true;
-void LCD_gameStarted() {
-	if (!lcdInitSample) {
-		selectedLevel = 'E';
-		LCD_SetLocalization(0x03);
-		LCD_SendWord("Space Invaders");
-		LCD_SetLocalization(0x40);
-		LCD_SendWord("Level: ");
-		LCD_SetLocalization(0x47);
-		switch (selectedLevel) {
-		case 'E':
-			LCD_SendWord("Easy");
-			break;
-		case 'M':
-			LCD_SendWord("Medium");
-			break;
-		case 'H':
-			LCD_SendWord("Hard");
-			break;
-		}
-		LCD_SetLocalization(0x14);
-		LCD_SendWord("Score: 0");
-		LCD_SetLocalization(0x54);
-		LCD_SendWord("Time: 0s");
-		lcdInitSample = true;
-	}
-	if (currentScore != newScore) {
-		currentScore = newScore;
-		char word[4];
-		LCD_SetLocalization(0x1B);
-		sprintf(word, "%d", currentScore);
-		LCD_SendWord(word);
-	}
-	if (currentGameTimeCounter != newGameTimeCounter) {
-		currentGameTimeCounter = newGameTimeCounter;
-		char word[4];
-		if (currentGameTimeCounter >= 0 && currentGameTimeCounter <= 9) {
-			if (currentGameTimeCounter == 0) {
-				LCD_SetLocalization(0x5B);
-				LCD_SendWord("s");
-			}
-			sprintf(word, "%d", currentGameTimeCounter);
-			LCD_SetLocalization(0x5A);
-			LCD_SendWord(word);
-
-		} else if (currentGameTimeCounter >= 10
-				&& currentGameTimeCounter <= 99) {
-			if (currentGameTimeCounter == 10) {
-				LCD_SetLocalization(0x5C);
-				LCD_SendWord("s");
-			}
-			sprintf(word, "%d", currentGameTimeCounter);
-			LCD_SetLocalization(0x5A);
-			LCD_SendWord(word);
-		} else if (currentGameTimeCounter >= 100
-				&& currentGameTimeCounter <= 999) {
-			if (currentGameTimeCounter == 100) {
-				LCD_SetLocalization(0x5D);
-				LCD_SendWord("s");
-			}
-			sprintf(word, "%d", currentGameTimeCounter);
-			LCD_SetLocalization(0x5A);
-			LCD_SendWord(word);
-		}
-	}
-}
-void LCD_gameStartedTitleAnimation() {
-	if (lcdInitSample) {
-		switch (LCDtitleAnimationStep) {
-		case 0:
-			LCD_SetLocalization(0x03);
-			LCD_SendWord("S");
-			break;
-		case 1:
-			LCD_SetLocalization(0x03);
-			LCD_SendWord(" ");
-			break;
-		case 2:
-			LCD_SetLocalization(0x03);
-			LCD_SendWord("S");
-			LCD_SetLocalization(0x04);
-			LCD_SendWord(" ");
-			break;
-		case 3:
-			LCD_SetLocalization(0x04);
-			LCD_SendWord("p");
-			LCD_SetLocalization(0x05);
-			LCD_SendWord(" ");
-			break;
-		case 4:
-			LCD_SetLocalization(0x05);
-			LCD_SendWord("a");
-			LCD_SetLocalization(0x06);
-			LCD_SendWord(" ");
-			break;
-		case 5:
-			LCD_SetLocalization(0x06);
-			LCD_SendWord("c");
-			LCD_SetLocalization(0x07);
-			LCD_SendWord(" ");
-			break;
-		case 6:
-			LCD_SetLocalization(0x07);
-			LCD_SendWord("e");
-			break;
-		case 7:
-			LCD_SetLocalization(0x09);
-			LCD_SendWord(" ");
-			break;
-		case 8:
-			LCD_SetLocalization(0x09);
-			LCD_SendWord("I");
-			LCD_SetLocalization(0x0A);
-			LCD_SendWord(" ");
-			break;
-		case 9:
-			LCD_SetLocalization(0x0A);
-			LCD_SendWord("n");
-			LCD_SetLocalization(0x0B);
-			LCD_SendWord(" ");
-			break;
-		case 10:
-			LCD_SetLocalization(0x0B);
-			LCD_SendWord("v");
-			LCD_SetLocalization(0x0C);
-			LCD_SendWord(" ");
-			break;
-		case 11:
-			LCD_SetLocalization(0x0C);
-			LCD_SendWord("a");
-			LCD_SetLocalization(0x0D);
-			LCD_SendWord(" ");
-			break;
-		case 12:
-			LCD_SetLocalization(0x0D);
-			LCD_SendWord("d");
-			LCD_SetLocalization(0x0E);
-			LCD_SendWord(" ");
-			break;
-		case 13:
-			LCD_SetLocalization(0x0E);
-			LCD_SendWord("e");
-			LCD_SetLocalization(0x0F);
-			LCD_SendWord(" ");
-			break;
-		case 14:
-			LCD_SetLocalization(0x0F);
-			LCD_SendWord("r");
-			LCD_SetLocalization(0x10);
-			LCD_SendWord(" ");
-			break;
-		case 15:
-			LCD_SetLocalization(0x10);
-			LCD_SendWord("s");
-			break;
-		case 16:
-			break;
-		case 17:
-			LCD_SetLocalization(0x10);
-			LCD_SendWord(" ");
-			break;
-		case 18:
-			LCD_SetLocalization(0x10);
-			LCD_SendWord("s");
-			LCD_SetLocalization(0x0F);
-			LCD_SendWord(" ");
-			break;
-		case 19:
-			LCD_SetLocalization(0x0F);
-			LCD_SendWord("r");
-			LCD_SetLocalization(0x0E);
-			LCD_SendWord(" ");
-			break;
-		case 20:
-			LCD_SetLocalization(0x0E);
-			LCD_SendWord("e");
-			LCD_SetLocalization(0x0D);
-			LCD_SendWord(" ");
-			break;
-		case 21:
-			LCD_SetLocalization(0x0D);
-			LCD_SendWord("d");
-			LCD_SetLocalization(0x0C);
-			LCD_SendWord(" ");
-			break;
-		case 22:
-			LCD_SetLocalization(0x0C);
-			LCD_SendWord("a");
-			LCD_SetLocalization(0x0B);
-			LCD_SendWord(" ");
-			break;
-		case 23:
-			LCD_SetLocalization(0x0B);
-			LCD_SendWord("v");
-			LCD_SetLocalization(0x0A);
-			LCD_SendWord(" ");
-			break;
-		case 24:
-			LCD_SetLocalization(0x0A);
-			LCD_SendWord("n");
-			LCD_SetLocalization(0x09);
-			LCD_SendWord(" ");
-			break;
-		case 25:
-			LCD_SetLocalization(0x09);
-			LCD_SendWord("I");
-			break;
-		case 26:
-			LCD_SetLocalization(0x07);
-			LCD_SendWord(" ");
-			break;
-		case 27:
-			LCD_SetLocalization(0x07);
-			LCD_SendWord("e");
-			LCD_SetLocalization(0x06);
-			LCD_SendWord(" ");
-			break;
-		case 28:
-			LCD_SetLocalization(0x06);
-			LCD_SendWord("c");
-			LCD_SetLocalization(0x05);
-			LCD_SendWord(" ");
-			break;
-		case 29:
-			LCD_SetLocalization(0x05);
-			LCD_SendWord("a");
-			LCD_SetLocalization(0x04);
-			LCD_SendWord(" ");
-			break;
-		case 30:
-			LCD_SetLocalization(0x04);
-			LCD_SendWord("p");
-			LCD_SetLocalization(0x03);
-			LCD_SendWord(" ");
-			break;
-		case 31:
-			LCD_SetLocalization(0x03);
-			LCD_SendWord("S");
-			break;
-		default:
-			break;
-		}
-		LCDtitleAnimationStep++;
-		if (LCDtitleAnimationStep == 32) {
-			LCDtitleAnimationStep = -1;
-		}
-	}
-
-}
-void LCD_tryAgain() {
-	LCD_Clear_2
-	;
-	LCD_Clear_3
-	;
-	LCD_Clear_4
-	;
-	LCD_SetLocalization(0x54);
-	LCD_SendWord("Score: ");
-	char word[4];
-	sprintf(word, "%d", currentScore);
-	LCD_SetLocalization(0x5B);
-	LCD_SendWord(word);
-	LCD_SetLocalization(0x45);
-	LCD_SendWord("Try again?");
-	LCD_SetLocalization(0x18);
-	LCD_SendWord("Yes");
-	LCD_SetLocalization(0x22);
-	LCD_SendWord("No");
-	LCDtriedAgain = true;
-}
-void tryAgainCheckForSelectedOption() {
-	if (LEFT()) {
-		if (LCDtryAgainOption != LCDtryAgainOptionTemp) {
-			LCDtryAgainOptionTemp = LCDtryAgainOption;
-			LCD_SetLocalization(0x22);
-			LCD_SendWord("No");
-			LCDtryAgainAnimationStep = 0;
-		}
-		LCDtryAgainOption = 'Y';
-	}
-	if (RIGHT()) {
-		if (LCDtryAgainOption != LCDtryAgainOptionTemp) {
-			LCDtryAgainOptionTemp = LCDtryAgainOption;
-			LCD_SetLocalization(0x18);
-			LCD_SendWord("Yes");
-			LCDtryAgainAnimationStep = 0;
-		}
-		LCDtryAgainOption = 'N';
-	}
-}
-void tryAgainSelectedOptionAnimation() {
-	switch (LCDtryAgainAnimationStep) {
-	case 0:
-		switch (LCDtryAgainOption) {
-		case 'Y':
-			LCD_SetLocalization(0x18);
-			createInvertedWord("Yes", 0x18, 3, 0, 0);
-			blockPress = false;
-			blockRight = false;
-			blockLeft = false;
-			break;
-		case 'N':
-			LCD_SetLocalization(0x22);
-			createInvertedWord("No", 0x22, 3, 0, 0);
-			blockPress = false;
-			blockRight = false;
-			blockLeft = false;
-			break;
-		default:
-			break;
-
-		}
-		break;
-	case 1:
-		switch (LCDtryAgainOption) {
-		case 'Y':
-			LCD_SetLocalization(0x18);
-			LCD_SendWord("   ");
-			break;
-		case 'N':
-			LCD_SetLocalization(0x22);
-			LCD_SendWord("  ");
-			break;
-		default:
-			break;
-		}
-		break;
-	default:
-		break;
-	}
-}
-void LCDcheckExecuteOption() {
-	switch (LCDtryAgainOption) {
-	case 'Y':
-		LCD_Clear_2
-		;
-		LCD_Clear_3
-		;
-		LCD_Clear_4
-		;
-		diodeArrayInit();
-		playerRandomPos = 0;
-		playerInitialized = false;
-		initPlayerIndex = 0;
-		playerSetPosition = false;
-		playerActivateLeft = false;
-		playerActivateRight = false;
-		playerSpawn = ' ';
-		playerDirection = ' ';
-		playerNewMove = false;
-		gameOver = false;
-		initLineStep = -2;
-		enemyLineCount = -3;
-		enemyTotalCount = -5;
-		blockInitEnemy = false;
-		blockInitFirstLine = false;
-		enemyInitialized = false;
-		newRound = true;
-		enemyActivateShoot_1 = false;
-		enemyActivateShoot_2 = false;
-		enemyActivateShoot_3 = false;
-		enemyActivateShoot_4 = false;
-		enemyShootInit_1 = true;
-		enemyShootInit_2 = true;
-		enemyShootInit_3 = true;
-		enemyShootInit_4 = true;
-		enemyShootFirstDiode_1 = true;
-		enemyShootFirstDiode_2 = true;
-		enemyShootFirstDiode_3 = true;
-		enemyShootFirstDiode_4 = true;
-		lcdInitSample = false;
-		LCDtriedAgain = false;
-		LCDtitleAnimationStep = 0;
-		waitToDisplayTryAgain = 0;
-		LCDtryAgainAnimationStep = 0;
-		reverseLCDtitleAnimation = false;
-		currentScore = 0;
-		newScore = 0;
-		reverseLED = false;
-		themeID = 0;
-		themeID_temp = 0;
-		newGameTimeCounter = 0;
-		currentGameTimeCounter = 0;
-		gameOver_reset();
-		animationRound = 11;
-		lcdInitSample = false;
-		LCDtriedAgain = false;
-		LCDtitleAnimationStep = 0;
-		waitToDisplayTryAgain = 0;
-		LCDtryAgainAnimationStep = 0;
-		reverseLCDtitleAnimation = false;
-		break;
-	case 'N':
-
-		break;
-	default:
-		break;
-	}
-}
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-//PERIOD: 5499
-	if (htim->Instance == TIM2) {
-//		if(!gameStarted)
+uint32_t VR[2];
+int gameNotStarted_Blue = 0;
+bool gameNotStarted_Reverse = true;
+void SpaceInvaders_TIM2() {
+	if (!gameStarted) {
 		MENU_Animation_TIM2();
-/*		if (!playerInitialized && !gameOver) {
+	} else {
+		if (!playerInitialized && !gameOver) {
 			initPlayer(VR);
 			initPlayerIndex++;
 			blockPress = true;
@@ -540,18 +140,333 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 				blockRight = false;
 			}
 		}
-		if (enemyInitialized && !gameOver) {
+		if (enemyInitialized && !gameOver
+				&& (selectedLevel == 'E' || selectedLevel == 'M')) {
 			newRound = false;
-			for (int i = 0; i < 70; i++) {
-				enemyMovement();
+			switch (selectedLevel) {
+			case 'E':
+				switch (gameRound) {
+				case 1:
+					for (int i = 0; i < 45; i++) {
+						enemyMovement();
+					}
+					break;
+				case 2:
+					for (int i = 0; i < 55; i++) {
+						enemyMovement();
+					}
+					break;
+				case 3:
+					for (int i = 0; i < 65; i++) {
+						enemyMovement();
+					}
+					break;
+				case 4:
+					for (int i = 0; i < 75; i++) {
+						enemyMovement();
+					}
+					break;
+				case 5:
+					for (int i = 0; i < 85; i++) {
+						enemyMovement();
+					}
+					break;
+				case 6:
+					for (int i = 0; i < 95; i++) {
+						enemyMovement();
+					}
+					break;
+				default:
+					break;
+				}
+				break;
+			case 'M':
+				switch (gameRound) {
+				case 1:
+					for (int i = 0; i < 65; i++) {
+						enemyMovement();
+					}
+					break;
+				case 2:
+					for (int i = 0; i < 75; i++) {
+						enemyMovement();
+					}
+					break;
+				case 3:
+					for (int i = 0; i < 85; i++) {
+						enemyMovement();
+					}
+					break;
+				case 4:
+					for (int i = 0; i < 95; i++) {
+						enemyMovement();
+					}
+					break;
+				case 5:
+					for (int i = 0; i < 105; i++) {
+						enemyMovement();
+					}
+					break;
+				case 6:
+					for (int i = 0; i < 115; i++) {
+						enemyMovement();
+					}
+					break;
+				default:
+					break;
+				}
+				break;
+			default:
+				break;
 			}
-		} else if (!gameOver && newRound) {
+
+		} else if (!gameOver && newRound
+				&& (selectedLevel == 'E' || selectedLevel == 'M')) {
 			enemyInitialization();
 		}
 		if (gameOver && waitToDisplayTryAgain <= 3) {
 			waitToDisplayTryAgain++;
 			blockJoystick();
-		}*/
+		}
+	}
+}
+void SpaceInvaders_TIM3() {
+	if (gameStarted) {
+
+		if (enemyTotalCount < 40 && !gameOver) {
+			initEnemy();
+		}
+
+		if (!gameOver) {
+			LCD_gameStarted();
+		}
+
+		if (gameOver && !LCDtriedAgain && waitToDisplayTryAgain == 3) {
+			LCD_tryAgain();
+		} else if (gameOver && LCDtriedAgain && waitToDisplayTryAgain == 4) {
+			tryAgainCheckForSelectedOption();
+		}
+		if (Press == GPIO_PIN_RESET && waitToDisplayTryAgain == 4) {
+			LCDcheckExecuteOption();
+		}
+
+		if (enemyInitialized && !gameOver) {
+			refreshEnemies();
+			refreshBullets();
+			checkForPlayerHit();
+			checkForRoundOver();
+		}
+		if (!gameOver && (!blockLeft || !blockRight)) {
+			playerPositioning();
+			refreshPlayer();
+		}
+		if (playerStartShot && !gameOver) {
+			checkForBulletCollision();
+			checkForEnemyHit();
+		}
+
+		if (Press == GPIO_PIN_RESET && !playerStartShot && enemyInitialized) {
+			if (!gameOver) {
+				playerBulletRoute = 0;
+				playerStartShot = true;
+			} else {
+				tryAgain = true;
+			}
+
+		}
+	}
+}
+void SpaceInvaders_TIM4() {
+	if (!gameStarted) {
+		MENU();
+	}
+}
+void SpaceInvaders_TIM5() {
+	if (!gameStarted) {
+		MENU_Animation_TIM5();
+	} else {
+		if (enemyInitialized && !gameOver && selectedLevel == 'M') {
+			if (enemyActivateShoot_1) {
+				enemyShooting_1();
+				enemyDiodeShootRoute_1++;
+			}
+			if (enemyActivateShoot_2) {
+				enemyShooting_2();
+				enemyDiodeShootRoute_2++;
+
+			}
+			if (enemyActivateShoot_3) {
+				enemyShooting_3();
+				enemyDiodeShootRoute_3++;
+			}
+			if (enemyActivateShoot_4) {
+				enemyShooting_4();
+				enemyDiodeShootRoute_4++;
+			}
+		}
+	}
+	if (gameStarted) {
+		LCD_gameStartedTitleAnimation();
+	}
+}
+void SpaceInvaders_TIM6() {
+
+}
+void SpaceInvaders_TIM7() {
+	if (gameStarted) {
+		playerNewMove = true;
+	}
+}
+void SpaceInvaders_TIM8() {
+	if (gameStarted) {
+		if (enemyInitialized && !gameOver) {
+			newGameTimeCounter++;
+		}
+	}
+	if (gameOver) {
+		gameOverDisappear++;
+		if (gameOverDisappear == 5) {
+			enableGameOver = false;
+		}
+	}
+}
+void SpaceInvaders_TIM9() {
+	if (gameStarted && selectedLevel == 'E') {
+		if (enemyInitialized && !gameOver) {
+			if (enemyActivateShoot_1) {
+				enemyShooting_1();
+				enemyDiodeShootRoute_1++;
+			}
+			if (enemyActivateShoot_2) {
+				enemyShooting_2();
+				enemyDiodeShootRoute_2++;
+
+			}
+			if (enemyActivateShoot_3) {
+				enemyShooting_3();
+				enemyDiodeShootRoute_3++;
+			}
+			if (enemyActivateShoot_4) {
+				enemyShooting_4();
+				enemyDiodeShootRoute_4++;
+			}
+		}
+	}
+}
+void SpaceInvaders_TIM10() {
+	if (gameStarted) {
+		if (enemyInitialized && !gameOver) {
+			initEnemyShooting();
+		}
+		//Player shooting
+		if (playerStartShot && !gameOver && enemyInitialized && !newRound) {
+			playerShot();
+			playerBulletRoute++;
+		}
+	}
+}
+void SpaceInvaders_TIM11() {
+	if (gameStarted && selectedLevel == 'H') {
+		if (enemyInitialized && !gameOver) {
+			if (enemyActivateShoot_1) {
+				enemyShooting_1();
+				enemyDiodeShootRoute_1++;
+			}
+			if (enemyActivateShoot_2) {
+				enemyShooting_2();
+				enemyDiodeShootRoute_2++;
+
+			}
+			if (enemyActivateShoot_3) {
+				enemyShooting_3();
+				enemyDiodeShootRoute_3++;
+			}
+			if (enemyActivateShoot_4) {
+				enemyShooting_4();
+				enemyDiodeShootRoute_4++;
+			}
+		}
+	}
+}
+void SpaceInvaders_TIM12() {
+	if (gameStarted) {
+//				Yes / No
+//				animation
+		if (gameOver && LCDtriedAgain && waitToDisplayTryAgain == 4) {
+			tryAgainSelectedOptionAnimation();
+			if (LCDtryAgainAnimationStep == 0) {
+				LCDtryAgainAnimationStep++;
+			} else if (LCDtryAgainAnimationStep == 1) {
+				LCDtryAgainAnimationStep--;
+			}
+		}
+	}
+}
+void SpaceInvaders_TIM13() {
+	if (gameStarted) {
+		if (enemyInitialized && !gameOver && selectedLevel == 'H') {
+			newRound = false;
+			switch (gameRound) {
+			case 1:
+				for (int i = 0; i < 75; i++) {
+					enemyMovement();
+				}
+				break;
+			case 2:
+				for (int i = 0; i < 85; i++) {
+					enemyMovement();
+				}
+				break;
+			case 3:
+				for (int i = 0; i < 95; i++) {
+					enemyMovement();
+				}
+				break;
+			case 4:
+				for (int i = 0; i < 105; i++) {
+					enemyMovement();
+				}
+				break;
+			case 5:
+				for (int i = 0; i < 115; i++) {
+					enemyMovement();
+				}
+				break;
+			case 6:
+				for (int i = 0; i < 125; i++) {
+					enemyMovement();
+				}
+				break;
+			default:
+				break;
+			}
+
+		} else if (!gameOver && newRound && selectedLevel == 'H') {
+			enemyInitialization();
+		}
+	}
+}
+
+void gameNotStartedTheme() {
+	if (gameNotStarted_Reverse) {
+		gameNotStarted_Blue++;
+		if (gameNotStarted_Blue == 30) {
+			gameNotStarted_Reverse = !gameNotStarted_Reverse;
+		}
+	} else {
+		gameNotStarted_Blue--;
+		if (gameNotStarted_Blue == 15) {
+			gameNotStarted_Reverse = !gameNotStarted_Reverse;
+		}
+	}
+
+	setAllPixelColor(0, 0, gameNotStarted_Blue);
+}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+//PERIOD: 5499
+	if (htim->Instance == TIM2) {
+		SpaceInvaders_TIM2();
+
 	}
 
 //PERIOD: 299
@@ -559,145 +474,66 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		getJoystickDirection(VR);
 		getJoystickLed();
 		Press = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3);
-//		if (enemyTotalCount < 40 && !gameOver) {
-//			initEnemy();
-//		}
-//
-//		if (!gameOver) {
-//			LCD_gameStarted();
-//		}
-//
-//		if (gameOver && !LCDtriedAgain && waitToDisplayTryAgain == 3) {
-//			LCD_tryAgain();
-//		} else if (gameOver && LCDtriedAgain && waitToDisplayTryAgain == 4) {
-//			tryAgainCheckForSelectedOption();
-//		}
-//		if (tryAgain) {
-//			LCDcheckExecuteOption();
-//			tryAgain = false;
-//		}
-		/*		if (UP()) {
-		 }
-		 if (DOWN()) {
-		 }
-		 if (LEFT()) {
 
-		 }
-		 if (RIGHT()) {
-		 }*/
-//		if (enemyInitialized && !gameOver) {
-//			refreshEnemies();
-//			refreshBullets();
-//			checkForPlayerHit();
-//			checkForRoundOver();
-//		}
-//		if (!gameOver && (!blockLeft || !blockRight)) {
-//			playerPositioning();
-//			refreshPlayer();
-//		}
-//		if (playerStartShot && !gameOver) {
-//			checkForBulletCollision();
-//			checkForEnemyHit();
-//		}
-//		Press = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_3);
-//
-//		if (Press == GPIO_PIN_RESET && !blockPress && !playerStartShot) {
-//			if (!gameOver) {
-//				playerBulletRoute = 0;
-//				playerStartShot = true;
-//			} else {
-//				tryAgain = true;
-//			}
-//
-//		}
+		SpaceInvaders_TIM3();
+
 	}
 
 //PERIOD: 2599
 	if (htim->Instance == TIM4) {
-		MENU();
-
+		SpaceInvaders_TIM4();
 	}
 
 //PERIOD: 1899
 	if (htim->Instance == TIM5) {
-		MENU_Animation_TIM5();
-
-//		if (enemyInitialized && !gameOver) {
-//			if (enemyActivateShoot_1) {
-//				enemyShooting_1();
-//				enemyDiodeShootRoute_1++;
-//			}
-//			if (enemyActivateShoot_2) {
-//				enemyShooting_2();
-//				enemyDiodeShootRoute_2++;
-//
-//			}
-//			if (enemyActivateShoot_3) {
-//				enemyShooting_3();
-//				enemyDiodeShootRoute_3++;
-//			}
-//			if (enemyActivateShoot_4) {
-//				enemyShooting_4();
-//				enemyDiodeShootRoute_4++;
-//			}
-//		}
-//		LCD_gameStartedTitleAnimation();
+		SpaceInvaders_TIM5();
 	}
 //PERIOD: 999
 	if (htim->Instance == TIM6) {
-//		if (!gameOver) {
-//			for (uint16_t i = 0; i < 256; i++)
-//				theme(i);
-//		}
-//		SpaceInvaders_gameOver();
+		if (gameStarted) {
+			if (!gameOver) {
+				for (int i = 0; i < 256; i++)
+					theme(i);
+			}
+			if (enableGameOver) {
+				SpaceInvaders_gameOver();
+			} else {
+				diodeArrayInit();
+				for (int i = 0; i < 256; i++)
+					theme(i);
+			}
+		} else {
+			gameNotStartedTheme();
+		}
 	}
 //PERIOD: 4799
 	if (htim->Instance == TIM7) {
-//		playerNewMove = true;
-
+		SpaceInvaders_TIM7();
 	}
 
 //1s
 	if (htim->Instance == TIM8) {
-//		if (enemyInitialized && !gameOver) {
-//			newGameTimeCounter++;
-//		}
+		SpaceInvaders_TIM8();
 	}
 	if (htim->Instance == TIM9) {
-
+		SpaceInvaders_TIM9();
 	}
 
 //PERIOD: 799
 	if (htim->Instance == TIM10) {
-
-//		if (enemyInitialized && !gameOver) {
-//			initEnemyShooting();
-//		}
-//		//Player shooting
-//		if (playerStartShot && !gameOver && enemyInitialized && !newRound) {
-//			playerShot();
-//			playerBulletRoute++;
-//		}
+		SpaceInvaders_TIM10();
 	}
 	if (htim->Instance == TIM11) {
-
+		SpaceInvaders_TIM11();
 	}
+	//PERIOD: 6000
 	if (htim->Instance == TIM12) {
-//		Yes/No animation
-//		if (gameOver && LCDtriedAgain && waitToDisplayTryAgain == 4) {
-//			tryAgainSelectedOptionAnimation();
-//			if (LCDtryAgainAnimationStep == 0) {
-//				LCDtryAgainAnimationStep++;
-//			} else if (LCDtryAgainAnimationStep == 1) {
-//				LCDtryAgainAnimationStep--;
-//			}
-//		}
+		SpaceInvaders_TIM12();
 	}
 	if (htim->Instance == TIM13) {
-
+		SpaceInvaders_TIM13();
 	}
 }
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -717,6 +553,7 @@ int main(void) {
 	/* MCU Configuration--------------------------------------------------------*/
 
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+
 	HAL_Init();
 
 	/* USER CODE BEGIN Init */
@@ -733,7 +570,6 @@ int main(void) {
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	MX_DMA_Init();
-	MX_ADC1_Init();
 	MX_I2C2_Init();
 	MX_TIM3_Init();
 	MX_TIM4_Init();
@@ -748,8 +584,9 @@ int main(void) {
 	MX_TIM11_Init();
 	MX_TIM12_Init();
 	MX_TIM13_Init();
+	MX_ADC1_Init();
 	/* USER CODE BEGIN 2 */
-
+	HAL_ADC_Start_DMA(&hadc1, VR, 2);
 	lcd_init();
 	HAL_TIM_Base_Start_IT(&htim2);
 	HAL_TIM_Base_Start_IT(&htim3);
@@ -763,7 +600,7 @@ int main(void) {
 	HAL_TIM_Base_Start_IT(&htim11);
 	HAL_TIM_Base_Start_IT(&htim12);
 	HAL_TIM_Base_Start_IT(&htim13);
-	HAL_ADC_Start_DMA(&hadc1, VR, 2);
+	LCD_Clear
 	setAllPixelColor(0, 0, 0);
 	diodeArrayInit();
 	srand((int) VR[0] + (int) VR[1] + 5);
@@ -992,7 +829,7 @@ static void MX_TIM3_Init(void) {
 	htim3.Instance = TIM3;
 	htim3.Init.Prescaler = 9599;
 	htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim3.Init.Period = 39;
+	htim3.Init.Period = 19;
 	htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	if (HAL_TIM_Base_Init(&htim3) != HAL_OK) {
@@ -1190,7 +1027,7 @@ static void MX_TIM8_Init(void) {
 	htim8.Instance = TIM8;
 	htim8.Init.Prescaler = 9599;
 	htim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim8.Init.Period = 19998;
+	htim8.Init.Period = 18999;
 	htim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim8.Init.RepetitionCounter = 0;
 	htim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -1233,7 +1070,7 @@ static void MX_TIM9_Init(void) {
 	htim9.Instance = TIM9;
 	htim9.Init.Prescaler = 9599;
 	htim9.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim9.Init.Period = 2099;
+	htim9.Init.Period = 5699;
 	htim9.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim9.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	if (HAL_TIM_Base_Init(&htim9) != HAL_OK) {
@@ -1295,7 +1132,7 @@ static void MX_TIM11_Init(void) {
 	htim11.Instance = TIM11;
 	htim11.Init.Prescaler = 9599;
 	htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim11.Init.Period = 2599;
+	htim11.Init.Period = 1899;
 	htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim11.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	if (HAL_TIM_Base_Init(&htim11) != HAL_OK) {
@@ -1326,7 +1163,7 @@ static void MX_TIM12_Init(void) {
 	htim12.Instance = TIM12;
 	htim12.Init.Prescaler = 9599;
 	htim12.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim12.Init.Period = 4300;
+	htim12.Init.Period = 6000;
 	htim12.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim12.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	if (HAL_TIM_Base_Init(&htim12) != HAL_OK) {
@@ -1359,7 +1196,7 @@ static void MX_TIM13_Init(void) {
 	htim13.Instance = TIM13;
 	htim13.Init.Prescaler = 9599;
 	htim13.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim13.Init.Period = 1099;
+	htim13.Init.Period = 4199;
 	htim13.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim13.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	if (HAL_TIM_Base_Init(&htim13) != HAL_OK) {

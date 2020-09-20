@@ -4,6 +4,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Core/Src/LCDgameService.c \
 ../Core/Src/Menu.c \
 ../Core/Src/diode.c \
 ../Core/Src/dma.c \
@@ -30,6 +31,7 @@ C_SRCS += \
 ../Core/Src/ws2812b.c 
 
 OBJS += \
+./Core/Src/LCDgameService.o \
 ./Core/Src/Menu.o \
 ./Core/Src/diode.o \
 ./Core/Src/dma.o \
@@ -56,6 +58,7 @@ OBJS += \
 ./Core/Src/ws2812b.o 
 
 C_DEPS += \
+./Core/Src/LCDgameService.d \
 ./Core/Src/Menu.d \
 ./Core/Src/diode.d \
 ./Core/Src/dma.d \
@@ -83,6 +86,8 @@ C_DEPS += \
 
 
 # Each subdirectory must supply rules for building sources it contributes
+Core/Src/LCDgameService.o: ../Core/Src/LCDgameService.c
+	arm-none-eabi-gcc "$<" -mcpu=cortex-m7 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F746xx -DDEBUG -c -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/LCDgameService.d" -MT"$@" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Core/Src/Menu.o: ../Core/Src/Menu.c
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m7 -std=gnu11 -g3 -DUSE_HAL_DRIVER -DSTM32F746xx -DDEBUG -c -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/Menu.d" -MT"$@" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "$@"
 Core/Src/diode.o: ../Core/Src/diode.c

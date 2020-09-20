@@ -1,2 +1,2 @@
-game.c:6:5:getRand	24	static
-game.c:11:6:theme	40	static
+game.c:7:5:getRand	24	static
+game.c:12:6:theme	32	static

@@ -3,21 +3,23 @@ int currentScore = 0, newScore = 0;
 bool reverseLED = false;
 int themeID = 0, themeID_temp = 0;
 int newGameTimeCounter = 0, currentGameTimeCounter = 0;
+int gameRound = 1;
 int getRand(int min, int max) {
 	int result = rand() % (max + 1 - min) + min;
 	return result;
 }
 
-void theme(uint16_t diodeID) {
-	struct Diode currentDiode;
-	int Index;
-	for (int i = 0; i < 256; i++) {
+void theme(int diodeID) {
+	int Index = diodeID;
+	struct Diode currentDiode = DiodeArray[Index];
+
+/*	for (int i = 0; i < 256; i++) {
 		if (diodeID == DiodeArray[i].ID) {
 			currentDiode = DiodeArray[i];
 			Index = i;
 			break;
 		}
-	}
+	}*/
 	themeID = getRand(0, 25);
 	playerRandomPos = getRand(1, 2);
 	switch (themeID) {

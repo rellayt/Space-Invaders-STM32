@@ -41,7 +41,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/enemyShootingControl.h ../Core/Inc/enemyControl.h \
  ../Core/Inc/playerShootingControl.h ../Core/Inc/enemyShootingControl.h \
  ../Core/Inc/game.h ../Core/Inc/playerControl.h \
- ../Core/Inc/objectRefresh.h ../Core/Inc/game.h
+ ../Core/Inc/objectRefresh.h ../Core/Inc/game.h \
+ ../Core/Inc/LCDgameService.h ../Core/Inc/Menu.h \
+ ../Core/Inc/lcdcommands.h ../Core/Inc/enemyControl.h ../Core/Inc/intro.h \
+ ../Core/Inc/loading.h ../Core/Inc/gameOver.h ../Core/Inc/gameOver.h
 
 ../Core/Inc/main.h:
 
@@ -162,3 +165,19 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/objectRefresh.h:
 
 ../Core/Inc/game.h:
+
+../Core/Inc/LCDgameService.h:
+
+../Core/Inc/Menu.h:
+
+../Core/Inc/lcdcommands.h:
+
+../Core/Inc/enemyControl.h:
+
+../Core/Inc/intro.h:
+
+../Core/Inc/loading.h:
+
+../Core/Inc/gameOver.h:
+
+../Core/Inc/gameOver.h:

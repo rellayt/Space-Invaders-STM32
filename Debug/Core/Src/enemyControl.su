@@ -2,7 +2,7 @@ enemyControl.c:11:6:initEnemy	40	static
 enemyControl.c:97:6:initEnemyLine	40	static
 enemyControl.c:203:6:enemyLineMoveDown	64	static
 enemyControl.c:908:6:enemyInitialization	8	static
-enemyControl.c:964:6:enemyMovement	96	static
-enemyControl.c:3490:6:checkForEnemyHit	24	static
-enemyControl.c:4097:5:getEnemyBulletLine	24	static
-enemyControl.c:4633:6:checkForBulletCollision	24	static
+enemyControl.c:967:6:enemyMovement	96	static
+enemyControl.c:3493:6:checkForEnemyHit	24	static
+enemyControl.c:4100:5:getEnemyBulletLine	24	static
+enemyControl.c:4636:6:checkForBulletCollision	24	static

@@ -953,6 +953,9 @@ void enemyInitialization() {
 		enemyLineMoveDown(4, enemyFourthLine, 5);
 		enemyLineMoveDown(5, enemyFifthLine, 4);
 		enemyInitialized = true;
+		shotFromID = 0;
+		playerBulletRoute = 0;
+		playerStartShot = false;
 		break;
 	default:
 		break;

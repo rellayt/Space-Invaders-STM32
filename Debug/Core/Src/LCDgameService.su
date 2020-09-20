@@ -1,0 +1,6 @@
+LCDgameService.c:10:6:LCD_gameStarted	16	static
+LCDgameService.c:76:6:LCD_gameStartedTitleAnimation	8	static
+LCDgameService.c:259:6:LCD_tryAgain	16	static
+LCDgameService.c:277:6:tryAgainCheckForSelectedOption	8	static
+LCDgameService.c:297:6:tryAgainSelectedOptionAnimation	16	static
+LCDgameService.c:338:6:LCDcheckExecuteOption	8	static
